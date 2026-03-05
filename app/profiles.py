@@ -205,11 +205,15 @@ def build_singbox_config(
                 },
                 {
                     "tag": "direct-dns",
-                    "type": "local",
+                    "type": "udp",
+                    "server": "8.8.8.8",
+                    "server_port": 53,
+                    "detour": "direct",
                 },
             ],
             "final": "proxy-dns",
             "strategy": "prefer_ipv4",
+            "independent_cache": True,
         },
         "inbounds": [
             {
@@ -219,7 +223,7 @@ def build_singbox_config(
                 "address": ["172.19.0.1/30"],
                 "auto_route": True,
                 "strict_route": True,
-                "stack": "system",
+                "stack": "mixed",
                 "sniff": True,
             },
             {
@@ -272,7 +276,7 @@ def build_singbox_config(
                 config["route"]["rules"].append(proxy_rule_domain)
 
                 # DNS rule: resolve whitelisted domains via proxy-dns
-                dns_rule: dict = {"server": "proxy-dns", "domain_suffix": domain_suffixes}
+                dns_rule: dict = {"action": "route", "server": "proxy-dns", "domain_suffix": domain_suffixes}
                 config["dns"]["rules"] = [dns_rule]
 
         if has_processes:
